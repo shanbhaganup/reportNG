@@ -1,0 +1,515 @@
+============================= BANK.java =============================
+package src_files;
+
+abstract public class BANK {
+	protected String BranchName, IFSCCode, Location;
+	
+	/*protected String getLocation() {return Location;}
+	protected String getIFSCCode() {return IFSCCode;}
+	protected String getBranchName() {return BranchName;}
+	
+	protected void setLocation(String Location) {this.Location=Location;}
+	protected void setIFSCCode(String IFSCCode) {this.IFSCCode=IFSCCode;}
+	protected void setBranchName(String BranchName) {this.BranchName=BranchName;}*/
+	
+	abstract protected String getLocation(); 
+	abstract protected String getIFSCCode();
+	abstract protected String getBranchName(); 
+	
+	abstract protected void setLocation(String Location);
+	abstract protected void setIFSCCode(String IFSCCode);
+	abstract protected void setBranchName(String BranchName);	
+	@Override
+	public abstract boolean equals(Object obj);
+}
+
+============================= SBI.java ==============================
+package src_files;
+
+abstract public class SBI extends BANK
+{
+	static int InterestRate=8;
+	SBI(){}
+	SBI(String BranchName, String IFSCCode, String Location)
+	{
+		this.BranchName=BranchName;
+		this.IFSCCode=IFSCCode;
+		this.Location=Location;
+	}
+	
+	protected String getLocation() {return Location;}
+	protected String getIFSCCode() {return IFSCCode;}
+	protected String getBranchName() {return BranchName;}
+	
+	protected void setLocation(String Location) {this.Location=Location;}
+	protected void setIFSCCode(String IFSCCode) {this.IFSCCode=IFSCCode;}
+	protected void setBranchName(String BranchName) {this.BranchName=BranchName;}
+	@Override
+	public abstract boolean equals(Object obj);
+
+}
+
+
+class SBISavingsAccount extends SBI{
+	protected double AccountBalance;
+	protected String AccountNo;
+	SBISavingsAccount() {}
+	SBISavingsAccount(String BranchName, String IFSCCode, String Location,String AccountNo,double AccountBalance ) 
+	{
+		super(BranchName,IFSCCode,Location);
+		this.AccountBalance=AccountBalance;
+		this.AccountNo=AccountNo;
+	}
+	protected String getAccountNumber(){return AccountNo;}
+	protected double availBalance(){return AccountBalance;}
+	protected void deposit(double amount){AccountBalance+=amount;}
+	protected void withdraw(double amount){AccountBalance-=amount;}
+	protected int getRateOfInterest(){return InterestRate;}
+	protected double calcInterest() {return ((AccountBalance*InterestRate)/100);}
+	
+	@Override
+	public boolean equals(Object obj) 
+	{	
+		if (this == obj)	return true;
+		if (obj == null)	return false;
+		if (getClass() != obj.getClass())	return false;
+		SBISavingsAccount other = (SBISavingsAccount) obj;
+		if (AccountNo == null) 
+		{
+			if (other.AccountNo != null)	return false;
+		} 
+		else if (!AccountNo.equals(other.AccountNo))
+			return false;
+		return true;
+	}
+
+	
+}
+
+class SBISalaryAccount extends SBISavingsAccount{
+	SBISalaryAccount () {}
+	SBISalaryAccount (String BranchName, String IFSCCode, String Location,String AccountNo,double AccountBalance ) 
+	{
+		super(BranchName,IFSCCode,Location,AccountNo,AccountBalance);
+	}
+	protected void ZeroBalance()
+	{
+		System.out.println("Salary Account is an Zero Balance Account!\n"
+				+""
+				+"");
+	}
+	protected void HighInterestRate()
+	{
+		System.out.println("**** Diwali Dhamaka Offer ****\n"
+				+"Exclusively For customers having salary account.\n"
+				+"Interest rate of 12.5% on Fixed Deposits");
+	}
+	protected int getRateOfInterest(){return InterestRate;}
+	protected double calcInterest() {return ((AccountBalance*InterestRate)/100);}
+}
+
+class SBICurrentAccount{
+	
+}
+============================= AXIS.java =============================
+package src_files;
+
+abstract public class AXIS extends BANK
+{
+	static int InterestRate=9;
+	AXIS(){}
+	AXIS(String BranchName, String IFSCCode, String Location)
+	{
+		this.BranchName=BranchName;
+		this.IFSCCode=IFSCCode;
+		this.Location=Location;
+	}
+	protected String getLocation() {return Location;}
+	protected String getIFSCCode() {return IFSCCode;}
+	protected String getBranchName() {return BranchName;}
+	
+	protected void setLocation(String Location) {this.Location=Location;}
+	protected void setIFSCCode(String IFSCCode) {this.IFSCCode=IFSCCode;}
+	protected void setBranchName(String BranchName) {this.BranchName=BranchName;}
+	@Override
+	public abstract boolean equals(Object obj);
+}
+
+class AXISSavingsAccount extends AXIS{
+	protected double AccountBalance;
+	protected String AccountNo;
+	AXISSavingsAccount() {}
+	AXISSavingsAccount(String BranchName, String IFSCCode, String Location,String AccountNo,double AccountBalance) 
+	{
+		super(BranchName,IFSCCode,Location);
+		this.AccountBalance=AccountBalance;
+		this.AccountNo=AccountNo;
+	}
+	protected String getAccountNumber(){return AccountNo;}
+	protected double availBalance(){return AccountBalance;}
+	protected void deposit(double amount){AccountBalance+=amount;}
+	protected void withdraw(double amount){AccountBalance-=amount;}
+	protected int getRateOfInterest(){return InterestRate;}
+	protected double calcInterest() {return ((AccountBalance*InterestRate)/100);}
+	@Override
+	public boolean equals(Object obj) 
+	{
+		if (this == obj)	return true;
+		if (obj == null)	return false;
+		if (getClass() != obj.getClass())	return false;
+		AXISSavingsAccount other = (AXISSavingsAccount) obj;
+		if (AccountNo == null) 
+		{
+			if (other.AccountNo != null)	return false;
+		} 
+		else if (!AccountNo.equals(other.AccountNo))
+			return false;
+		
+		return true;
+	}
+}
+
+class AXISSalaryAccount extends AXISSavingsAccount{
+	AXISSalaryAccount () {}
+	AXISSalaryAccount (String BranchName, String IFSCCode, String Location,String AccountNo,double AccountBalance ) 
+	{
+		super(BranchName,IFSCCode,Location,AccountNo,AccountBalance);
+	}
+	protected void ZeroBalance()
+	{
+		System.out.println("Salary Account is an Zero Balance Account!\n"
+				+""
+				+"");
+	}
+	protected void HighInterestRate()
+	{
+		System.out.println("**** Diwali Dhamaka Offer ****\n"
+				+"Exclusively For customers having salary account.\n"
+				+"Interest rate of 12% on Fixed Deposits");
+	}
+	protected int getRateOfInterest(){return InterestRate;}
+	protected double calcInterest() {return ((AccountBalance*InterestRate)/100);}
+}
+
+class AXISCurrentAccount{
+	
+}
+============================= ICICI.java ============================
+package src_files;
+
+abstract public class ICICI extends BANK
+{
+	static int InterestRate=7;
+	ICICI(){}
+	ICICI(String BranchName, String IFSCCode, String Location)
+	{
+		this.BranchName=BranchName;
+		this.IFSCCode=IFSCCode;
+		this.Location=Location;
+	}
+	protected String getLocation() {return Location;}
+	protected String getIFSCCode() {return IFSCCode;}
+	protected String getBranchName() {return BranchName;}
+	
+	protected void setLocation(String Location) {this.Location=Location;}
+	protected void setIFSCCode(String IFSCCode) {this.IFSCCode=IFSCCode;}
+	protected void setBranchName(String BranchName) {this.BranchName=BranchName;}
+	@Override
+	public abstract boolean equals(Object obj);
+}
+
+class ICICISavingsAccount extends ICICI{
+	protected double AccountBalance;
+	protected String AccountNo;
+	ICICISavingsAccount() {}
+	ICICISavingsAccount(String BranchName, String IFSCCode, String Location,String AccountNo,double AccountBalance) 
+	{
+		super(BranchName,IFSCCode,Location);
+		this.AccountBalance=AccountBalance;
+		this.AccountNo=AccountNo;
+	}
+	protected String getAccountNumber(){return AccountNo;}
+	protected double availBalance(){return AccountBalance;}
+	protected void deposit(double amount){AccountBalance+=amount;}
+	protected void withdraw(double amount){AccountBalance-=amount;}	
+	protected int getRateOfInterest(){return InterestRate;}
+	protected double calcInterest() {return ((AccountBalance*InterestRate)/100);}
+	
+	@Override
+	public boolean equals(Object obj) 
+	{
+		if (this == obj)	return true;
+		if (obj == null)	return false;
+		if (getClass() != obj.getClass())	return false;
+		ICICISavingsAccount other = (ICICISavingsAccount) obj;
+		if (AccountNo == null) 
+		{
+			if (other.AccountNo != null)	return false;
+		} 
+		else if (!AccountNo.equals(other.AccountNo))
+			return false;
+		
+		return true;
+	}
+	
+}
+
+class ICICISalaryAccount extends ICICISavingsAccount{
+	ICICISalaryAccount () {}
+	ICICISalaryAccount (String BranchName, String IFSCCode, String Location,String AccountNo,double AccountBalance ) 
+	{
+		super(BranchName,IFSCCode,Location,AccountNo,AccountBalance);
+	}
+	protected void ZeroBalance()
+	{
+		System.out.println("Salary Account is an Zero Balance Account!\n"
+				+""
+				+"");
+	}
+	protected void HighInterestRate()
+	{
+		System.out.println("**** Diwali Dhamaka Offer ****\n"
+				+"Exclusively For customers having salary account.\n"
+				+"Interest rate of 11.5% on Fixed Deposits");
+	}
+	protected int getRateOfInterest(){return InterestRate;}
+	protected double calcInterest() {return ((AccountBalance*InterestRate)/100);}
+}
+
+class ICICICurrentAccount{
+	
+}
+============================= ExecMain.java =========================
+package src_files;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class ExecMain {
+
+	ArrayList<BANK> accounts = new ArrayList<BANK>();
+	
+	public BANK selectBank(Scanner jin)
+	{
+		BANK b=null;
+		String choice, accNum;
+		boolean bankSelect=false;
+		System.out.println("\nSELECT THE BANK : ");
+		do
+		{
+			System.out.println("1. SBI, Bangalore, Karnataka");
+			System.out.println("2. ICICI, Hyderabad, Andhra Pradesh");
+			System.out.println("3. AXIS Chennai, Tamilnadu");
+			System.out.print("ENTER CHOICE : ");
+			choice = jin.nextLine();
+			switch(choice)
+			{
+				case "1": 	System.out.print("ENTER ACCOUNT-NUMBER : ");
+							accNum = jin.nextLine();
+							b = new SBISavingsAccount("Whitefield","SBIS5600009","Bangalore, Karnataka",accNum,300.0);
+							bankSelect=true;
+						break;
+
+				case "2": 	System.out.print("ENTER ACCOUNT-NUMBER : ");
+							accNum = jin.nextLine();
+							b = new ICICISavingsAccount("Madhapur","ICICI563124","Hyderabad, Andhra Pradesh",accNum,300.0);
+							bankSelect=true;
+						break;
+
+				case "3": 	System.out.print("ENTER ACCOUNT-NUMBER : ");
+							accNum = jin.nextLine();
+							b = new AXISSavingsAccount("Kumaran Nagar","AXIS5803269","Chennai, Tamil Nadu",accNum,300.0);
+							bankSelect=true;
+						break;
+				default: System.out.println("WRONG CHOICE ! TRY AGAIN!");
+						 bankSelect=false;
+			}
+		}while(!bankSelect);
+		return b;
+	}
+	
+	public void BankTransaction(Scanner jin)
+	{
+		BANK bankAcc;
+		SBISavingsAccount sbi = new SBISavingsAccount();
+		ICICISavingsAccount icici = new ICICISavingsAccount();
+		//AXISSavingsAccount axis = new AXISSavingsAccount();
+		System.out.println("\nSELECT OPERATION TO BE PERFORMED : ");
+		String choice;
+		//System.out.println("SELECT THE OPERATION : ");
+		do
+		{
+				System.out.println("1. CREATE ACCOUNT");
+				System.out.println("2. DEPOSIT AMOUNT");
+				System.out.println("3. WITHDRAW AMOUNT");
+				System.out.println("4. CHECK BALANCE");
+				System.out.println("5. CALCULATE INTEREST(One Year) FOR CURRENT BALANCE");
+				System.out.println("6. EXIT");
+				System.out.print("ENTER CHOICE : ");
+				choice = jin.nextLine();
+				switch(choice)
+				{
+					case "1": 	bankAcc = selectBank(jin);
+								accounts.add(bankAcc);
+							break;
+					case "2": 	bankAcc = selectBank(jin);
+								if(accounts.contains(bankAcc))
+								{
+									int i = accounts.indexOf(bankAcc);
+									//System.out.println("\t" + i);
+									BANK b =accounts.get(i);
+									//System.out.println(b.getClass()+"");
+									System.out.print("ENTER AMOUNT : ");
+									double amt = Double.parseDouble(jin.nextLine());
+									
+									if(b.getClass().getName().equals(sbi.getClass().getName()))
+									{
+										SBISavingsAccount sAcc =(SBISavingsAccount)b;
+										sAcc.deposit(amt);
+										//System.out.println(""+sAcc.availBalance());
+									}
+									else if(b.getClass().getName().equals(icici.getClass().getName()))
+									{
+										ICICISavingsAccount sAcc =(ICICISavingsAccount)b;
+										sAcc.deposit(amt);
+										//System.out.println(""+sAcc.availBalance());
+									}
+									else
+									{
+										AXISSavingsAccount sAcc =(AXISSavingsAccount)b;
+										sAcc.deposit(amt);
+										//System.out.println(""+sAcc.availBalance());
+									}	
+								}
+								else
+									System.out.println("NO SUCH ACCOUNT EXISTS!");
+							break;
+					case "3": 	bankAcc = selectBank(jin);
+								if(accounts.contains(bankAcc))
+								{
+										int i = accounts.indexOf(bankAcc);
+										//System.out.println("\t" + i);
+										BANK b =accounts.get(i);
+										//System.out.println(b.getClass()+"");
+										System.out.print("ENTER AMOUNT : ");
+										double amt = Double.parseDouble(jin.nextLine());
+						
+										if(b.getClass().getName().equals(sbi.getClass().getName()))
+										{
+											SBISavingsAccount sAcc =(SBISavingsAccount)b;
+											sAcc.withdraw(amt);
+											//System.out.println(""+sAcc.availBalance());
+										}
+										else if(b.getClass().getName().equals(icici.getClass().getName()))
+										{
+											ICICISavingsAccount sAcc =(ICICISavingsAccount)b;
+											sAcc.withdraw(amt);
+											//System.out.println(""+sAcc.availBalance());
+										}
+										else
+										{
+											AXISSavingsAccount sAcc =(AXISSavingsAccount)b;
+											sAcc.withdraw(amt);
+											//System.out.println(""+sAcc.availBalance());
+										}	
+								}
+								else
+									System.out.println("NO SUCH ACCOUNT EXISTS!");
+							break;
+					case "4": 	bankAcc = selectBank(jin);
+								if(accounts.contains(bankAcc))
+								{
+									int i = accounts.indexOf(bankAcc);
+									//System.out.println("\t" + i);
+									BANK b =accounts.get(i);
+									//System.out.println(b.getClass()+"");
+									//System.out.print("ENTER AMOUNT : ");
+									//double amt = Double.parseDouble(jin.nextLine());
+						
+									if(b.getClass().getName().equals(sbi.getClass().getName()))
+									{
+										SBISavingsAccount sAcc =(SBISavingsAccount)b;
+										System.out.println("AVAILABLE BALANCE \t:\t "+sAcc.availBalance());
+									}
+									else if(b.getClass().getName().equals(icici.getClass().getName()))
+									{
+										ICICISavingsAccount sAcc =(ICICISavingsAccount)b;
+										System.out.println("AVAILABLE BALANCE \t:\t "+sAcc.availBalance());
+									}
+									else
+									{
+										AXISSavingsAccount sAcc =(AXISSavingsAccount)b;
+										System.out.println("AVAILABLE BALANCE \t:\t "+sAcc.availBalance());
+									}	
+								}
+								else
+									System.out.println("NO SUCH ACCOUNT EXISTS!");
+							break;
+					case "5": 	bankAcc = selectBank(jin);
+								if(accounts.contains(bankAcc))
+								{
+									int i = accounts.indexOf(bankAcc);
+									//System.out.println("\t" + i);
+									BANK b =accounts.get(i);
+									//System.out.println(b.getClass()+"");
+									//System.out.print("ENTER AMOUNT : ");
+									//double amt = Double.parseDouble(jin.nextLine());
+			
+									if(b.getClass().getName().equals(sbi.getClass().getName()))
+									{
+										SBISavingsAccount sAcc =(SBISavingsAccount)b;
+										System.out.println("1YR INTEREST ON CURRENT ACCOUNT \t:\t "+sAcc.calcInterest());
+									}
+									else if(b.getClass().getName().equals(icici.getClass().getName()))
+									{
+										ICICISavingsAccount sAcc =(ICICISavingsAccount)b;
+										System.out.println("1YR INTEREST ON CURRENT ACCOUNT \t:\t "+sAcc.calcInterest());
+									}
+									else
+									{
+										AXISSavingsAccount sAcc =(AXISSavingsAccount)b;
+										System.out.println("1YR INTEREST ON CURRENT ACCOUNT \t:\t "+sAcc.calcInterest());
+									}	
+								}
+								else
+									System.out.println("NO SUCH ACCOUNT EXISTS!");
+							break;
+				case "6": System.exit(0);break;
+				default: System.out.println("WRONG CHOICE ! TRY AGAIN!");
+				}
+			}while(true);
+	}
+	
+	public static void main(String[] args) 
+	{
+		Scanner jin = new Scanner(System.in);
+		ExecMain m = new ExecMain();
+		m.BankTransaction(jin);
+		/*SBISalaryAccount s = new SBISalaryAccount("Rajnagar","SBIN7007967","Hubli","123456789",16381.76);
+		System.out.println(s.getBranchName());
+		System.out.println(s.getIFSCCode());
+		System.out.println(s.getLocation());
+		s.setBranchName("Jayanagar");
+		s.setLocation("Bangalore");
+		s.setIFSCCode("SBIN005609");
+		System.out.println(s.getBranchName());
+		System.out.println(s.getIFSCCode());
+		System.out.println(s.getLocation());
+		System.out.println(s.getAccountNumber());
+		System.out.println(s.availBalance());
+		s.deposit(35000);
+		System.out.println(s.availBalance());
+		s.withdraw(10000);
+		System.out.println(s.availBalance());
+		System.out.println(s.getRateOfInterest());
+		System.out.println(s.calcInterest());
+		s.HighInterestRate();
+		s.ZeroBalance();
+		String choice;*/
+		
+
+		
+		
+		
+	}
+}
