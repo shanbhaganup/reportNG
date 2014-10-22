@@ -1,0 +1,120 @@
+package com.span.onlyoffice;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+public class TestRun {
+	
+	  private WebDriver driver;
+	  private String baseUrl;
+	  private WebElement uname, passwd, signin, signout, helpBalloonClose;
+	  private WebElement documents,createDropDown, selectDocType, createFile, commitFile;
+	  private WebElement fileCanvas, fileSave, gotoDocuments, unLink;
+	  @BeforeTest
+	  public void setUp() throws Exception {
+	    driver = new FirefoxDriver();
+	    baseUrl = "https://testng.onlyoffice.sg/";
+	    driver.manage().timeouts().implicitlyWait(45, TimeUnit.SECONDS);
+	  }
+	  @Test
+	  public void testUntitled() throws Exception {
+		  
+		  driver.manage().window().maximize();
+		  driver.get(baseUrl);
+		  //initSiteElements();
+		  uname = driver.findElement(By.xpath(".//input[@id='login']"));
+		  passwd = driver.findElement(By.xpath(".//*[@id='pwd']"));
+		  signin = driver.findElement(By.xpath(".//a[@id='loginButton']"));
+		  uname.clear();uname.sendKeys("shanbhaganup@gmail.com");
+		  passwd.clear();passwd.sendKeys("9964515643");
+		  signin.click();
+		  documents = driver.findElement(By.xpath(".//a[@class='link header']"));
+		  documents.click();
+		  //helpBalloonClose = driver.findElement(By.xpath(".//*[@id='helperSet-0']/div[2]"));
+		  helpBalloonClose = driver.findElement(By.xpath(".//div[@class='closeBlock']"));
+		  helpBalloonClose.click();
+		  createDropDown = driver.findElement(By.xpath(".//span[@class='white-combobox']"));
+		  createDropDown.click();
+		  selectDocType = driver.findElement(By.xpath(".//a[@id='createDocument']"));
+		  selectDocType.click();
+		  createFile = driver.findElement(By.xpath(".//input[@id='promptCreateFile']"));
+		  createFile.clear();
+		  createFile.sendKeys("TestFile");
+		  commitFile = driver.findElement(By.xpath(".//div[@class='button gray btn-action __apply name-aplly']"));
+		  commitFile.click();
+		  WebElement editorFrame = null;
+		  String  childWindow = null;
+		  //boolean found =false;
+		  String parentWindow = null;
+		  Set<String> winSet = driver.getWindowHandles();
+		  String[] windows = winSet.toArray(new String[winSet.size()]);
+		  parentWindow = windows[0];
+		  childWindow = windows[1];
+		  driver.switchTo().window(childWindow);
+		  editorFrame = driver.findElement(By.xpath(".//iframe[contains(@src,"
+			  		+ "'https://doc.teamlab.eu.com/OfficeWeb/v1.704/apps/documenteditor/main/index.html')]"));
+		  driver.switchTo().frame(editorFrame);
+		  
+		  fileCanvas = driver.findElement(By.xpath(".//canvas[@id='id_viewer']"));
+		  fileCanvas.sendKeys("Hi! How are You ?");
+		  
+		  fileSave = driver.findElement(By.xpath(".//button[@id='toolbar-button-save-btnEl']"));
+		  fileSave.click();
+		  
+		  WebDriverWait wait = new WebDriverWait(driver, 50);
+		  wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(".//div[@id='ext-gen1096' and class='cmd-loadmask-title']")));
+		  
+		  gotoDocuments = driver.findElement(By.xpath(".//span[@id='header-back']"));
+		  gotoDocuments.click();
+		  driver.switchTo().defaultContent();
+		  driver.close();
+		  
+		  driver.switchTo().window(parentWindow);
+		  driver.switchTo().defaultContent();
+		  
+		  wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(".//span[@class='usr-prof' and @title='Anup Shanbhag']")));
+		  
+		  unLink = driver.findElement(By.xpath(".//span[@class='usr-prof' and @title='Anup Shanbhag']"));
+		  unLink.click();
+		  
+		  wait.until(ExpectedConditions.invisibilityOfElementLocated(By.xpath(".//div[@id='studio_myStaffPopupPanel']")));
+		  
+		  signout = driver.findElement(By.xpath(".//a[@class='dropdown-item' and @href='/auth.aspx?t=logout']"));
+		  signout.click();
+		  Thread.sleep(30000);
+	  }
+	  
+	  public boolean isAlertPresent() 
+	  { 
+	      try 
+	      { 
+	          driver.switchTo().alert(); 
+	          return true; 
+	      }   // try 
+	      catch (NoAlertPresentException Ex) 
+	      { 
+	          return false; 
+	      }   // catch 
+	  }   
+	  
+	 @AfterTest
+	  public void tearDown() throws Exception {
+	    driver.quit();
+	  }
+
+}
