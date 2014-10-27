@@ -1,13 +1,11 @@
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-		
+/* Some important points to note*/
 public class ExcelUtils {
-
 	private String strFilePath = "testdata.xlsx";
 	private XSSFSheet ExcelWSheet;
 	private XSSFWorkbook ExcelWBook;
@@ -16,9 +14,7 @@ public class ExcelUtils {
 
 	// This method is to set the File path and to open the Excel file, Pass
 	// Excel Path and Sheetname as Arguments to this method
-
-	public void setExcelFile(String Path, String SheetName)
-			throws Exception {
+	public void setExcelFile(String Path, String SheetName) throws Exception {
 		try {
 			// Open the Excel file
 			strFilePath = Path;
@@ -33,9 +29,7 @@ public class ExcelUtils {
 
 	// This method is to read the test data from the Excel cell, in this we are
 	// passing parameters as Row num and Col num
-
 	public String getCellData(int RowNum, int ColNum) throws Exception {
-
 		try {
 			Cell = ExcelWSheet.getRow(RowNum).getCell(ColNum);
 			String CellData = Cell.getStringCellValue();
@@ -43,17 +37,16 @@ public class ExcelUtils {
 		} catch (Exception e) {
 			return "";
 		}
-
 	}
 
 	// This method is to write in the Excel cell, Row num and Col num are the
 	// parameters
-
 	public void setCellData(String Result, int RowNum, int ColNum)
 			throws Exception {
 		try {
 			Row = ExcelWSheet.getRow(RowNum);
-			Cell = Row.getCell(ColNum, org.apache.poi.ss.usermodel.Row.RETURN_BLANK_AS_NULL);
+			Cell = Row.getCell(ColNum,
+					org.apache.poi.ss.usermodel.Row.RETURN_BLANK_AS_NULL);
 			if (Cell == null) {
 				Cell = Row.createCell(ColNum);
 				Cell.setCellValue(Result);
@@ -61,8 +54,7 @@ public class ExcelUtils {
 				Cell.setCellValue(Result);
 			}
 			// Constant variables Test Data path and Test Data file name
-			FileOutputStream fileOut = new FileOutputStream(
-					strFilePath);
+			FileOutputStream fileOut = new FileOutputStream(strFilePath);
 			ExcelWBook.write(fileOut);
 			fileOut.flush();
 			fileOut.close();
@@ -70,32 +62,61 @@ public class ExcelUtils {
 			throw (e);
 		}
 	}
-	
-	public int firstRow()
-	{
+
+	public int firstRow() {
 		return ExcelWSheet.getFirstRowNum();
 	}
-	
-	public int lastRow()
-	{	
+
+	public int lastRow() {
 		return ExcelWSheet.getLastRowNum();
 	}
-	
-	public int firstCol()
-	{
-		return ExcelWSheet.getRow(ExcelWSheet.getFirstRowNum()).getFirstCellNum();
+
+	public int firstCol() {
+		return ExcelWSheet.getRow(ExcelWSheet.getFirstRowNum())
+				.getFirstCellNum();
 	}
-	
-	public int lastCol()
-	{
-		return ExcelWSheet.getRow(ExcelWSheet.getFirstRowNum()).getLastCellNum();
+
+	public int lastCol() {
+		return ExcelWSheet.getRow(ExcelWSheet.getFirstRowNum())
+				.getLastCellNum();
 	}
-		public static void main(String[] args) throws Exception{
+	public String[][] readExcelFile()
+	{
+		int startRow = firstRow(),startCol = firstCol();
+		int endRow = lastRow(),endCol = lastCol();
+		String[][] data = new String[endRow-startRow][endCol-startCol];
+		for(int i = startRow,k=0;i<endRow;i++,k++)
+		{
+			for(int j=startCol,l=0;j<endCol;j++,l++)
+			{
+				XSSFCell cell = ExcelWSheet.getRow(i+1).getCell(j);
+				cell.setCellType(org.apache.poi.ss.usermodel.Cell.CELL_TYPE_STRING);
+				data[k][l]=""+cell.getStringCellValue();
+				//System.out.println(data[k][l]);
+				//System.out.println(k+"\t"+l);
+			}
+		}
+		return data;
+	}
+	public static void main(String[] args) throws Exception {
 		ExcelUtils xl = new ExcelUtils();
-		 System.out.println("Working Directory = " +
-	              System.getProperty("user.dir"));
+		System.out.println("Working Directory = "
+				+ System.getProperty("user.dir"));
 		xl.setExcelFile("./testdata.xlsx", "Login");
-		System.out.println("Start\t:\t("+xl.firstRow()+","+xl.firstCol()+")");
-		System.out.println("End\t:\t("+xl.lastRow()+","+xl.lastCol()+")");
+		System.out.println("Start\t:\t(" + xl.firstRow() + "," + xl.firstCol()
+				+ ")");
+		System.out.println("End\t:\t(" + xl.lastRow() + "," + xl.lastCol()
+				+ ")");
+		int m,n;
+		String[][] str = xl.readExcelFile();
+		m=str.length;
+		n=str[0].length;
+		System.out.println(m+"\t"+n);
+		for(int i=0;i<m;i++){
+			for(int j=0;j<n;j++){
+				System.out.print(str[i][j]+"\t|");
+			}
+			System.out.println();
+		}
 	}
 }
