@@ -118,6 +118,8 @@ public class TestRun {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By
 				.xpath(".//div[@id='confirmRemoveList']//label[@title='TestFile.docx']")));
 		confirmDelete.click();
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.
+				xpath(".//div[@class='toast-message']")));
 		wait.until(ExpectedConditions.presenceOfElementLocated(By
 				.xpath(".//span[@class='usr-prof' and @title='Anup Shanbhag']")));
 		unLink = driver
