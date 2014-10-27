@@ -1,0 +1,162 @@
+package com.span.onlyoffice;
+
+//import java.util.Iterator;
+//import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+//import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+//import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+public class TestRun {
+	private WebDriver driver;
+	private String baseUrl;
+	private WebDriverWait wait;
+	@BeforeTest
+	public void setUp() throws Exception {
+		driver = new FirefoxDriver();
+		baseUrl = "https://testng.onlyoffice.sg/";
+		wait = new WebDriverWait(driver, 45);
+		driver.manage().timeouts().implicitlyWait(45, TimeUnit.SECONDS);
+	}
+
+	@Test
+	public void testUntitled() throws Exception {
+		driver.manage().window().maximize();
+		driver.get(baseUrl);
+		signin("shanbhaganup@gmail.com","9964515643");
+		navigateToDocs();
+		createNewDoc("TestFile");
+		deleteDoc("TestFile");
+		signout();
+		Thread.sleep(30000);
+	}
+	
+	public void signin(String strUsername,String strPasswd){
+		WebElement uname, passwd, signin;
+		uname = driver.findElement(By.xpath(".//input[@id='login']"));
+		passwd = driver.findElement(By.xpath(".//*[@id='pwd']"));
+		signin = driver.findElement(By.xpath(".//a[@id='loginButton']"));
+		uname.clear();
+		uname.sendKeys(strUsername);
+		passwd.clear();
+		passwd.sendKeys(strPasswd);
+		signin.click();
+	}
+	
+	public void signout(){
+		WebElement unLink, signout;
+		wait.until(ExpectedConditions.presenceOfElementLocated(By
+				.xpath(".//span[@class='usr-prof' and @title='Anup Shanbhag']")));
+		unLink = driver
+				.findElement(By
+						.xpath(".//span[@class='usr-prof' and @title='Anup Shanbhag']"));
+		unLink.click();
+		wait.until(ExpectedConditions.presenceOfElementLocated(By
+				.xpath(".//div[@id='studio_myStaffPopupPanel']")));
+		signout = driver
+				.findElement(By
+						.xpath(".//a[@class='dropdown-item' and @href='/auth.aspx?t=logout']"));
+		signout.click();
+	}
+	
+	public void navigateToDocs()
+	{
+		WebElement documents, helpBalloonClose;
+		documents = driver.findElement(By.xpath(".//a[@class='link header']"));
+		documents.click();
+		// helpBalloonClose =
+		// driver.findElement(By.xpath(".//*[@id='helperSet-0']/div[2]"));
+		helpBalloonClose = driver.findElement(By
+				.xpath(".//div[@class='closeBlock']"));
+		helpBalloonClose.click();
+	}
+	
+	public void createNewDoc(String strFileName){
+		
+		WebElement createDropDown, selectDocType, createFile,
+				commitFile,fileCanvas, fileSave;
+
+		createDropDown = driver.findElement(By
+				.xpath(".//span[@class='white-combobox']"));
+		createDropDown.click();
+		selectDocType = driver.findElement(By
+				.xpath(".//a[@id='createDocument']"));
+		selectDocType.click();
+		createFile = driver.findElement(By
+				.xpath(".//input[@id='promptCreateFile']"));
+		createFile.clear();
+		createFile.sendKeys(strFileName);
+		commitFile = driver
+				.findElement(By
+						.xpath(".//div[@class='button gray btn-action __apply name-aplly']"));
+		commitFile.click();
+		WebElement editorFrame = null;
+		String childWindow = null;
+		// boolean found =false;
+		String parentWindow = null;
+		Set<String> winSet = driver.getWindowHandles();
+		String[] windows = winSet.toArray(new String[winSet.size()]);
+		parentWindow = windows[0];
+		childWindow = windows[1];
+		driver.switchTo().window(childWindow);
+		editorFrame = driver
+				.findElement(By
+						.xpath(".//iframe[contains(@src,"
+								+ "'https://doc.teamlab.eu.com/OfficeWeb/v1.704/apps/documenteditor/main/index.html')]"));
+		driver.switchTo().frame(editorFrame);
+		wait.until(ExpectedConditions.invisibilityOfElementLocated(By
+				.xpath(".//div[@class='loadmask-logo']")));
+		wait.until(ExpectedConditions.invisibilityOfElementLocated(By
+				.xpath(".//div[@id='ext-gen1097' and class='cmd-loadmask-title']")));
+		fileCanvas = driver.findElement(By.xpath(".//canvas[@id='id_viewer']"));
+		fileCanvas.sendKeys("Hi! How are You ?");
+		fileSave = driver.findElement(By
+				.xpath(".//button[@id='toolbar-button-save-btnEl']"));
+		fileSave.click();
+		// WebDriverWait wait = new WebDriverWait(driver, 50);
+		wait.until(ExpectedConditions.invisibilityOfElementLocated(By
+				.xpath(".//div[@id='ext-gen1096' and class='cmd-loadmask-title']")));
+//		gotoDocuments = driver.findElement(By
+//				.xpath(".//span[@id='header-back']"));
+//		gotoDocuments.click();
+		driver.switchTo().defaultContent();
+		driver.close();
+		driver.switchTo().window(parentWindow);
+		driver.switchTo().defaultContent();
+	}
+	
+	public void deleteDoc(String strFileName){
+		WebElement checkFile = driver
+				.findElement(By
+						.xpath(".//div[@title='"+strFileName+".docx']/parent::li//input[@type='checkbox']"));
+		WebElement deleteFile = driver.findElement(By
+				.xpath(".//li[@id='mainDelete']/span"));
+		WebElement confirmDelete = driver
+				.findElement(By
+						.xpath(".//a[@id='removeConfirmBtn' and @class='button blue middle']"));
+		//System.out.println(confirmDelete.getTagName());
+		checkFile.click();
+		//Thread.sleep(5000);
+		deleteFile.click();
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By
+				.xpath(".//div[@id='confirmRemoveList']//label[@title='"+strFileName+".docx']")));
+		confirmDelete.click();
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.
+				xpath(".//div[@class='toast-message']")));
+	}
+	@AfterTest
+	public void tearDown() throws Exception {
+		driver.quit();
+	}
+}
