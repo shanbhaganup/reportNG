@@ -1,0 +1,112 @@
+//package com.span.onlyoffice;
+
+//import java.util.Iterator;
+//import java.util.List;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
+
+//import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+//import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
+
+public class TestRun {
+	private WebDriver driver;
+	private String baseUrl;
+	private WebDriverWait wait;
+	@BeforeTest
+	public void setUp() throws Exception {
+		driver = new FirefoxDriver();
+		baseUrl = "http://www.ksrtc.in/site/";
+		wait = new WebDriverWait(driver, 45);
+		driver.manage().timeouts().implicitlyWait(45, TimeUnit.SECONDS);
+	}
+
+	@Test
+	public void testUntitled() throws Exception {
+		driver.manage().window().maximize();
+		driver.get(baseUrl);
+		source("BAN","bangalore");
+		destination("hub","hubli");
+		dateSelection("01","November","2014");
+		Thread.sleep(3000);
+	}
+	
+	public void source(String searchKey, String startPlace){
+		WebElement srcField;
+		List<WebElement> recommendations;
+		srcField = driver.findElement(By.xpath(".//input[@id='matchStartPlace']"));
+		srcField.sendKeys(searchKey);
+		WebDriverWait  wait = new WebDriverWait(driver,20);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.
+				xpath(".//ul[contains(@id,'ui-id-') and contains(@style,'display: block')]")));
+		recommendations = driver.findElements(By.
+				xpath(".//ul[contains(@id,'ui-id-') and contains(@style,'display: block')]/li[@class='ui-menu-item']"));
+		for (WebElement we: recommendations){
+			we = we.findElement(By.tagName("a"));
+			if(we.getText().equalsIgnoreCase(startPlace)) we.click();
+		}
+	}
+	public void destination(String searchKey, String endPlace){
+		WebElement destField;
+		List<WebElement> recommendations;
+		destField = driver.findElement(By.xpath(".//input[@id='matchEndPlace']"));
+		destField.sendKeys(searchKey);
+		WebDriverWait  wait = new WebDriverWait(driver,15);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.
+				xpath(".//ul[contains(@id,'ui-id-') and contains(@style,'display: block')]")));
+		/*recommendations = driver.findElements(By.
+				xpath(".//ul[contains(@id,'ui-id-') and contains(@style,'display: block')]/li[@class='ui-menu-item']"));
+		for (WebElement we: recommendations){
+			we = we.findElement(By.tagName("a"));
+			if(we.getText().equalsIgnoreCase(endPlace)) we.click();
+		}*/
+		driver.findElement(By.
+				xpath(".//ul[contains(@id,'ui-id-') and contains(@style,'display: block')]"
+						+ "//a[text()='"+endPlace.toUpperCase()+"']")).click();
+	}
+	
+	public void dateSelection(String dd, String month, String year)
+	{
+		WebElement dateSelect, curMonthSelect, nxtMonthSelect;
+		WebElement curMonth, curYear,nxtMonth,nxtYear;
+		dateSelect = driver.findElement(By.xpath(".//input[@id='txtdeptDateRtrip']"));
+		dateSelect.click();
+		WebDriverWait  wait = new WebDriverWait(driver,15);
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.
+				xpath(".//div[@id='ui-datepicker-div']")));
+		curMonthSelect = driver.findElement(By.
+				xpath(".//div[@id='ui-datepicker-div']//div[contains(@class,'group-first')]"));
+		nxtMonthSelect = driver.findElement(By.
+				xpath(".//div[@id='ui-datepicker-div']//div[contains(@class,'group-last')]"));
+		curMonth = curMonthSelect.findElement(By.
+				xpath("//span[@class='ui-datepicker-month']"));
+		curYear = curMonthSelect.findElement(By.
+				xpath("//span[@class='ui-datepicker-year']"));
+		
+		nxtMonth = nxtMonthSelect.findElement(By.
+				xpath("//span[@class='ui-datepicker-month']"));
+		nxtYear = nxtMonthSelect.findElement(By.
+				xpath("//span[@class='ui-datepicker-year']"));
+		/*if(!(curYear.getText().equals(year)||nxtYear.getText().equals(year)))
+			Assert.assertTrue(false, "FAILED YEAR VALIDATION");
+		if(!(curMonth.getText().equalsIgnoreCase(month)||nxtMonth.getText().equalsIgnoreCase(month)))
+			Assert.assertTrue(false, "FAILED MONTH VALIDATION");*/
+		
+	}
+	@AfterTest
+	public void tearDown() throws Exception {
+		driver.quit();
+	}
+}
