@@ -1,0 +1,19 @@
+1. Write a function to add three numbers without using third or temporary variable
+   by applying below coding standards in your script.
+
+            a. Documentation/C-type/Inline comments
+            b. Variable/Function declarations 
+            c. Proper indentation
+            d. Using whitespaces
+            e. Exception handling
+
+Note:  For the above question,please make use of the eclipse for writing the script.
+
+2. Write the purpose of having below components in the framework structure
+
+            a. Configuration files
+            b. Object repository 
+            c. Data source
+            d. Clean up files
+
+3. Difference between Generic, Business and Extended utility library folders in the framework with an example.
