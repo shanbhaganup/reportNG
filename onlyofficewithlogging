@@ -5,6 +5,7 @@ package com.span.onlyoffice;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+
 //import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.TimeoutException;
@@ -15,6 +16,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 //import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -39,11 +41,12 @@ public class TestRun {
 		baseUrl = "https://testng.onlyoffice.sg/";
 		wait = new WebDriverWait(driver, 45);
 		driver.manage().timeouts().implicitlyWait(45, TimeUnit.SECONDS);
-		log.info("NEW DRIVER INSTANTIATED.");
 		DOMConfigurator.configure("log4j.xml");
+		log.info("NEW DRIVER INSTANTIATED.");
+		
 	}
 
-	@Test(testName = "SmokeTest", dataProvider = "data")
+	@Test(testName = "SystemTest", dataProvider = "data")
 	public void testUntitled(String strUserName, String strPassWord,
 			String strFileName, String strFileContent) {
 		try{
@@ -62,7 +65,12 @@ public class TestRun {
 		log.info("CREATION OF NEW DOCUMENT INITIATED.");
 		createNewDoc(strFileName, strFileContent);
 		driver.navigate().refresh();
-		// deleteDoc("TestFile");
+		WebElement helpBalloonClose;
+		helpBalloonClose = driver.findElement(By
+				.xpath(".//div[@class='closeBlock']"));
+		log.info("Identified WebElement : 'CloseHelp' link.");
+		helpBalloonClose.click();
+		log.info("Successfully Clicked On 'Close Help'.");
 		log.info("DELETION OF CREATED DOCUMENT INITIATED.");
 		deleteDoc(strFileName);
 		log.info("SIGN-OUT OPERATION INITIATED.");
@@ -71,6 +79,8 @@ public class TestRun {
 		Thread.sleep(3000);
 		}catch(Exception e){
 			Reporter.log("Error :"+e.getMessage());
+			e.printStackTrace();
+			Assert.assertTrue(false,e.getLocalizedMessage());
 		}
 	}
 
@@ -98,6 +108,8 @@ public class TestRun {
 				throw new Exception("Unavailable Login Form. Couldn't login");
 		} catch (Exception e) {
 			Reporter.log("Error : In Login Attempt --> "+e.getMessage());
+			e.printStackTrace();
+			Assert.assertTrue(false,e.getLocalizedMessage());
 		}
 	}
 
@@ -134,6 +146,8 @@ public class TestRun {
 				throw new Exception("Incorrect redirection after sign-out.");
 		} catch (Exception e) {
 			Reporter.log("Error : In Logout --> " + e.getMessage());
+			e.printStackTrace();
+			Assert.assertTrue(false,e.getLocalizedMessage());
 		}
 	}
 
@@ -158,6 +172,8 @@ public class TestRun {
 				throw new Exception("Incorrect Home Page. Coundn't open Documents panel");
 		} catch (Exception e) {
 			Reporter.log("Error : In opening Documents Panel --> "+e.getMessage());
+			e.printStackTrace();
+			Assert.assertTrue(false,e.getLocalizedMessage());
 		}
 	}
 
@@ -189,12 +205,12 @@ public class TestRun {
 			log.info("Successfully clicked 'Apply' button.");
 			WebElement editorFrame = null;
 			String childWindow = null;
-			// boolean found =false;
 			String parentWindow = null;
 			Set<String> winSet = driver.getWindowHandles();
 			String[] windows = winSet.toArray(new String[winSet.size()]);
 			parentWindow = windows[0];
 			childWindow = windows[1];
+			winSet.clear();
 			log.info("Identified window handles.");
 			driver.switchTo().window(childWindow);
 			log.info("Attempting switch to child window.");
@@ -212,14 +228,21 @@ public class TestRun {
 			log.info("Identified WebElement : 'FileEditor' frame.");
 			driver.switchTo().frame(editorFrame);
 			log.info("Switched to Editor Frame.");
-			try {
+			/*try {
 				wait.until(ExpectedConditions.invisibilityOfElementLocated(By
 						.xpath(".//div[@class='loadmask-logo']")));
 				wait.until(ExpectedConditions.invisibilityOfElementLocated(By
 						.xpath(".//div[@id='ext-gen1097' and class='cmd-loadmask-title']")));
 			} catch (Exception e) {
 				throw new Exception("Taking Too Long to Load FileEditor.");
-			}
+			}*/
+			/*try{
+		        while(driver.findElement(By.xpath(".//div[@class='loadmask-logo']")).isDisplayed());
+		        }catch(Exception e){}
+			try{
+		        while(driver.findElement(By.xpath(".//div[@id='ext-gen1097' and class='cmd-loadmask-title']")).isDisplayed());
+		        }catch(Exception e){}*/
+			driver.findElement(By.xpath(".//div[@id='cmdloadmask-1068' and contains(@style,'display: none')]"));
 			fileCanvas = driver.findElement(By
 					.xpath(".//canvas[@id='id_viewer']"));
 			log.info("Identified WebElement : 'File Canvas'.");
@@ -232,13 +255,15 @@ public class TestRun {
 			fileSave.click();
 			log.info("Successfully clicked on 'Save' button.");
 			// WebDriverWait wait = new WebDriverWait(driver, 50);
-			try {
+			/*try {
 				wait.until(ExpectedConditions.invisibilityOfElementLocated(By
 						.xpath(".//div[@id='ext-gen1096' and class='cmd-loadmask-title']")));
 				Reporter.log("File changes successfully commited.");
 			} catch (Exception e) {
 				throw new Exception("Coundn't complete saving the document.");
-			}
+			}*/
+		       driver.findElement(By.xpath(".//div[@id='cmdloadmask-1068' and contains(@style,'display: none')]"));
+		       Reporter.log("File changes successfully commited.");
 			// gotoDocuments = driver.findElement(By
 			// .xpath(".//span[@id='header-back']"));
 			// gotoDocuments.click();
@@ -251,27 +276,46 @@ public class TestRun {
 			log.info("Switched to parent window.");
 		} catch (Exception e) {
 			Reporter.log("Error : In File Save." + e.getMessage());
+			e.printStackTrace();
+			Assert.assertTrue(false,e.getLocalizedMessage());
 		}
 	}
 
 	public void deleteDoc(String strFileName) {
 		try {
+			/*WebDriverWait wait = new WebDriverWait(driver,10);
+			wait.until(ExpectedConditions.invisibilityOfElementLocated(By.
+					xpath(".//div[@class='file-editing pencil' and contains(@title,'currently being edited')]")));
+			*/
+			int count=1;
+			while(count!=0){
+			count=driver.findElements(By.
+					xpath(".//div[@class='file-editing pencil' and contains(@title,'currently being edited')]")).size();
+			System.out.println(""+count);
+			//Thread.sleep(100);
+			}
 			WebElement checkFile = driver.findElement(By
 					.xpath(".//div[@title='" + strFileName
 							+ ".docx']/parent::li//input[@type='checkbox']"));
 			log.info("Identified WebElement : 'FileItem' checkbox.");
+			checkFile.click();
+			log.info("Successfully Selected/Checked File : '" + strFileName
+					+ "'");
 			WebElement deleteFile = driver.findElement(By
-					.xpath(".//li[@id='mainDelete']/span"));
+					.xpath(".//li[@id='mainDelete' and contains(@class,'unlockAction')]"));
 			log.info("Identified WebElement : 'Delete' button.");
+			deleteFile.click();
+			log.info("Successfully clicked on delete button");
+			
+			/*wait.until(ExpectedConditions.invisibilityOfElementLocated(By.
+					xpath(".//div[@class='file-editing pencil' and contains(@title,'currently being edited')]")));*/
+			
 			WebElement confirmDelete = driver
 					.findElement(By
 							.xpath(".//a[@id='removeConfirmBtn' and @class='button blue middle']"));
 			log.info("Identified WebElement : 'Confirm Delete' button.");
-			checkFile.click();
-			log.info("Successfully Selected/Checked File : '" + strFileName
-					+ "'");
-			deleteFile.click();
-			log.info("Successfully clicked on delete button");
+			
+			
 			try {
 				wait.until(ExpectedConditions.visibilityOfElementLocated(By
 						.xpath(".//div[@id='confirmRemoveList']//label[@title='"
@@ -293,6 +337,8 @@ public class TestRun {
 		} catch (Exception e) {
 			Reporter.log("Unable To Delete File : '" + strFileName + "'\n"
 					+ e.getMessage());
+			e.printStackTrace();
+			Assert.assertTrue(false,e.getLocalizedMessage());
 		}
 	}
 
@@ -305,6 +351,7 @@ public class TestRun {
 		} catch (Exception e) {
 			log.info("Test Data File Missing.");
 			log.info(e.getMessage());
+			e.printStackTrace();
 		}
 		Object[][] obj = xl.readExcelFile();
 		return obj;
