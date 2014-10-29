@@ -2,14 +2,28 @@
 
 //import java.util.Iterator;
 //import java.util.List;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
+
+
+
+
+
+
+
+import org.apache.james.mime4j.field.datetime.DateTime;
 //import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -39,7 +53,9 @@ public class TestRun {
 		driver.get(baseUrl);
 		source("BAN","bangalore");
 		destination("hub","hubli");
-		dateSelection("01","November","2014");
+		//dateSelection("01","November","2014");
+		//dateSelection("01","October","2014");
+		dateSelection("32","November","2014");
 		Thread.sleep(3000);
 	}
 	
@@ -77,33 +93,91 @@ public class TestRun {
 						+ "//a[text()='"+endPlace.toUpperCase()+"']")).click();
 	}
 	
-	public void dateSelection(String dd, String month, String year)
+	public void dateSelection(String day, String month, String year)
 	{
-		WebElement dateSelect, curMonthSelect, nxtMonthSelect;
-		WebElement curMonth, curYear,nxtMonth,nxtYear;
+		WebElement dateSelect;
+		DateFormat formatter = new SimpleDateFormat("dd MMM yyyy");
+		DateFormat formatter2 = new SimpleDateFormat("dd MM yyyy");
+		Date curDate=null,reqDate = null;
 		dateSelect = driver.findElement(By.xpath(".//input[@id='txtdeptDateRtrip']"));
 		dateSelect.click();
 		WebDriverWait  wait = new WebDriverWait(driver,15);
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.
 				xpath(".//div[@id='ui-datepicker-div']")));
-		curMonthSelect = driver.findElement(By.
-				xpath(".//div[@id='ui-datepicker-div']//div[contains(@class,'group-first')]"));
-		nxtMonthSelect = driver.findElement(By.
-				xpath(".//div[@id='ui-datepicker-div']//div[contains(@class,'group-last')]"));
-		curMonth = curMonthSelect.findElement(By.
-				xpath("//span[@class='ui-datepicker-month']"));
-		curYear = curMonthSelect.findElement(By.
-				xpath("//span[@class='ui-datepicker-year']"));
+		String cMnth,cYear,nMnth,nYear,curBlock,nxtBlock;
+		curBlock =".//div[@class='ui-datepicker-group ui-datepicker-group-first']//table[@class='ui-datepicker-calendar']//tbody";
+		nxtBlock=".//div[@class='ui-datepicker-group ui-datepicker-group-last']//table[@class='ui-datepicker-calendar']//tbody";
+		cMnth=".//div[@class='ui-datepicker-group ui-datepicker-group-first']//span[@class='ui-datepicker-month']";
+		cYear=".//div[@class='ui-datepicker-group ui-datepicker-group-first']//span[@class='ui-datepicker-year']";
+		nMnth=".//div[@class='ui-datepicker-group ui-datepicker-group-last']//span[@class='ui-datepicker-month']";
+		nYear=".//div[@class='ui-datepicker-group ui-datepicker-group-last']//span[@class='ui-datepicker-year']";
 		
-		nxtMonth = nxtMonthSelect.findElement(By.
-				xpath("//span[@class='ui-datepicker-month']"));
-		nxtYear = nxtMonthSelect.findElement(By.
-				xpath("//span[@class='ui-datepicker-year']"));
-		/*if(!(curYear.getText().equals(year)||nxtYear.getText().equals(year)))
+		WebElement curMonth = driver.findElement(By.xpath(cMnth));
+		WebElement curYear = driver.findElement(By.xpath(cYear));
+		WebElement nxtMonth = driver.findElement(By.xpath(nMnth));
+		WebElement nxtYear = driver.findElement(By.xpath(nYear));
+			
+		/* Calendar cal = Calendar.getInstance();
+		 try {
+			cal.setTime(new SimpleDateFormat("DD/MMMM/YYYY").parse(day+"/"+month+"/"+year));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}*/
+		 
+		 //System.out.println(monthInt+"\t"+cal.getTime());
+		//System.out.println(curMonth.getText()+"\t"+curYear.getText()+"\t"+nxtMonth.getText()+"\t"+nxtYear.getText());
+		if(!(curYear.getText().equals(year)||nxtYear.getText().equals(year)))
 			Assert.assertTrue(false, "FAILED YEAR VALIDATION");
 		if(!(curMonth.getText().equalsIgnoreCase(month)||nxtMonth.getText().equalsIgnoreCase(month)))
-			Assert.assertTrue(false, "FAILED MONTH VALIDATION");*/
+			Assert.assertTrue(false, "FAILED MONTH VALIDATION");
+		String today=".//div[contains(@class,'ui-datepicker-group ui-datepicker-group-')]//table[@class='ui-datepicker-calendar']//tbody//tr//td[contains(@class,'ui-datepicker-current-day')]";
+		try {
+			 /*Date d1,d2;
+			 d1=(Date)formatter.parse("30 October 2014");
+			 d2=(Date)formatter.parse("29 November 2014");
+			 System.out.println((d2.getTime()-d1.getTime())/(1000 * 60 * 60 * 24));*/
+			WebElement we = driver.findElement(By.xpath(today));
+			we.getAttribute("data-year");
+			curDate = (Date)formatter2.parse(we.findElement(By.tagName("a")).getText()
+					+" "+(Integer.parseInt(we.getAttribute("data-month"))+1)+" "+we.getAttribute("data-year"));
+			//System.out.println(curDate);
+			 reqDate = (Date)formatter.parse(day+" "+month+" "+year);
+			//System.out.println(reqDate+"\t"+reqDate.getDate()+"\t"+reqDate.getMonth());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(reqDate.getTime()>curDate.getTime()){
+		if(((reqDate.getTime()-curDate.getTime())/(1000 * 60 * 60 * 24))<=30){
+			String desiredDate = ".//div[contains(@class,'ui-datepicker-group ui-datepicker-group-')]//table[@class='ui-datepicker-calendar']//tbody//tr//td[@data-year='"
+					+ year
+					+ "' and @data-month='"
+					+ reqDate.getMonth()
+					+ "']//a[text()='" + reqDate.getDate() + "']";
+			driver.findElement(By.xpath(desiredDate)).click();
+			//System.out.println(desiredDate);
+		}
+		}
+		else{
+			String desiredDate = ".//div[contains(@class,'ui-datepicker-group ui-datepicker-group-')]//table[@class='ui-datepicker-calendar']//tbody//tr//td[contains(@class,'ui-datepicker-unselectable ui-state-disabled')]//span"
+					+ "[text()='"+reqDate.getDate()+"']";
+			try{
+			driver.findElement(By.xpath(desiredDate)).click();
+			}catch(NoSuchElementException e)
+			{
+				Assert.assertTrue(false,"No Such Element Found! Test Failed.");
+			}
+		}
+		driver.findElement(By.xpath(".//a[@title='Search For Services']")).click();
+		/*
+		.//div[@class='ui-datepicker-group ui-datepicker-group-last']//table[@class='ui-datepicker-calendar']//tbody//tr//td[@data-event='click']
 		
+		.//div[contains(@class,'ui-datepicker-group ui-datepicker-group-')]//table[@class='ui-datepicker-calendar']//tbody//tr//td[@data-year='2014' and @data-month='10']
+		
+		.//div[contains(@class,'ui-datepicker-group ui-datepicker-group-')]//table[@class='ui-datepicker-calendar']//tbody//tr//td[@data-year='2014' and @data-month='9']
+		
+		.//div[contains(@class,'ui-datepicker-group ui-datepicker-group-')]//table[@class='ui-datepicker-calendar']//tbody//tr//td
+		*/
 	}
 	@AfterTest
 	public void tearDown() throws Exception {
